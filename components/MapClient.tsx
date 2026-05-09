@@ -323,14 +323,15 @@ export default function MapClient({ sightings }: { sightings: Sighting[] }) {
   const [showAll, setShowAll] = useState(true);
 
   const { minYear, maxYear } = useMemo(() => {
+    const currentYear = new Date().getFullYear();
     const years = sightings
       .map(s => parseYear(s.date))
-      .filter((y): y is number => y !== null);
-    if (!years.length) return { minYear: 1947, maxYear: new Date().getFullYear() };
+      .filter((y): y is number => y !== null && y <= currentYear);
+    if (!years.length) return { minYear: 1947, maxYear: currentYear };
     return { minYear: Math.min(...years), maxYear: Math.max(...years) };
   }, [sightings]);
 
-  const [yearRange, setYearRange] = useState<[number, number]>([1947, 2025]);
+  const [yearRange, setYearRange] = useState<[number, number]>([minYear, maxYear]);
   useEffect(() => { setYearRange([minYear, maxYear]); }, [minYear, maxYear]);
 
   const withCoords = useMemo(
